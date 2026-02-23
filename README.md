@@ -31,6 +31,14 @@ set credentials to current shell (ex. bash, zsh)
 eval $(msk <profile>)
 ```
 
+### -n, --no-export-aws-profile
+
+Suppress `AWS_PROFILE` from the output. Use this when exporting `AWS_PROFILE` causes issues, such as running Claude Code with Bedrock.
+
+```
+eval $(msk -n <profile>)
+```
+
 ### example
 
 `~/.aws/config`

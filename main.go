@@ -22,10 +22,11 @@ var (
 	version  string
 	revision string
 
-	optUsage         bool
-	optSourceProfile string
-	optDuration      time.Duration
-	optFormatEnv     bool
+	optUsage                bool
+	optSourceProfile        string
+	optDuration             time.Duration
+	optFormatEnv            bool
+	optNoExportAWSProfile   bool
 )
 
 func init() {
@@ -34,6 +35,8 @@ func init() {
 	flag.BoolVar(&optUsage, "h", false, "show usage.")
 	flag.BoolVar(&optUsage, "help", false, "show usage.")
 	flag.BoolVar(&optFormatEnv, "format-env", false, "output format `K=V`")
+	flag.BoolVar(&optNoExportAWSProfile, "n", false, "no export AWS_PROFILE")
+	flag.BoolVar(&optNoExportAWSProfile, "no-export-aws-profile", false, "no export AWS_PROFILE")
 	flag.Parse()
 }
 
@@ -60,6 +63,9 @@ you can set temporary assume role credentials to current zsh/bash.
     export ASSUMED_ROLE="<assumed role arn>"
     export AWS_PROFILE="<target profile>"
     # this temporary credentials expire at YYYY-MM-DDTHH:mm:ss
+
+  # no export AWS_PROFILE
+  msk -n <profile>
 
   # for .env file
   msk -format-env <profile>
@@ -165,7 +171,9 @@ func main() {
 		fmt.Printf("AWS_SESSION_TOKEN=\"%s\"\n", AwsSessionToken)
 		fmt.Printf("AWS_SECURITY_TOKEN=\"%s\"\n", AwsSessionToken)
 		fmt.Printf("ASSUMED_ROLE=\"%s\"\n", assumedRole)
-		fmt.Printf("AWS_PROFILE=\"%s\"\n", targetProfile)
+		if !optNoExportAWSProfile {
+			fmt.Printf("AWS_PROFILE=\"%s\"\n", targetProfile)
+		}
 		fmt.Printf("# this temporary credentials expire at %s\n", expire)
 	} else {
 		fmt.Printf("export AWS_ACCESS_KEY_ID=\"%s\"\n", AwsKey)
@@ -173,7 +181,9 @@ func main() {
 		fmt.Printf("export AWS_SESSION_TOKEN=\"%s\"\n", AwsSessionToken)
 		fmt.Printf("export AWS_SECURITY_TOKEN=\"%s\"\n", AwsSessionToken)
 		fmt.Printf("export ASSUMED_ROLE=\"%s\"\n", assumedRole)
-		fmt.Printf("export AWS_PROFILE=\"%s\"\n", targetProfile)
+		if !optNoExportAWSProfile {
+			fmt.Printf("export AWS_PROFILE=\"%s\"\n", targetProfile)
+		}
 		fmt.Printf("# this temporary credentials expire at %s\n", expire)
 	}
 }
